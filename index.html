@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Workshilla — Enterprise project tracking, daily updates, and team allocation platform." />
+  <meta name="theme-color" content="#312e81" />
+  <title>Workshilla — Enterprise Work Tracking</title>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('workshilla_theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        if (t === 'dark') document.documentElement.classList.add('dark');
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+            display: ['"DM Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body class="app-body">
+  <a href="#main-content" class="skip-link">Skip to content</a>
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Auth / Home -->
+  <div id="auth-screen" class="auth-screen"></div>
+
+  <!-- Authenticated workspace -->
+  <div id="app-workspace" class="app-shell hidden">
+    <header class="app-header">
+      <div class="app-header__inner">
+        <div class="brand-lockup">
+          <div class="brand-mark" aria-hidden="true">W</div>
+          <div>
+            <h1 class="brand-name">Workshilla</h1>
+            <p class="brand-tagline">Enterprise Work Tracking Platform</p>
+          </div>
+        </div>
+
+        <div class="header-controls">
+          <button type="button" class="theme-toggle" data-theme-toggle aria-label="Toggle color theme">
+            <svg data-icon="moon" class="theme-toggle__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+            </svg>
+            <svg data-icon="sun" class="theme-toggle__icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05L5.636 5.636m12.728 0L16.95 7.05M7.05 16.95l-1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+            </svg>
+            <span data-theme-label>Dark</span>
+          </button>
+          <div class="header-user">
+            <p id="header-user-name" class="header-user__name"></p>
+            <p id="header-user-meta" class="header-user__meta"></p>
+          </div>
+          <div id="current-role-badge" class="role-badge" hidden></div>
+          <button type="button" id="btn-change-password" class="ws-btn ws-btn--secondary">Change Password</button>
+          <button type="button" id="btn-logout" class="ws-btn ws-btn--ghost">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <aside class="app-sidebar" aria-label="Primary">
+        <p class="sidebar-label">Workspace</p>
+        <nav id="main-nav" class="sidebar-nav">
+          <button type="button" data-tab="dashboard" class="nav-btn active">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
+            Dashboard
+          </button>
+          <button type="button" data-tab="projects" class="nav-btn">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            Projects
+          </button>
+          <button type="button" data-tab="updates" class="nav-btn">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Daily Updates
+          </button>
+          <button type="button" data-tab="roster" class="nav-btn">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            Team Roster
+          </button>
+          <button type="button" data-tab="settings" class="nav-btn">
+            <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Data Settings
+          </button>
+        </nav>
+      </aside>
+
+      <main id="main-content" class="app-main" tabindex="-1">
+        <section id="panel-dashboard" class="tab-panel" aria-label="Dashboard"></section>
+        <section id="panel-projects" class="tab-panel hidden" aria-label="Projects"></section>
+        <section id="panel-updates" class="tab-panel hidden" aria-label="Daily Updates"></section>
+        <section id="panel-roster" class="tab-panel hidden" aria-label="Team Roster"></section>
+        <section id="panel-settings" class="tab-panel hidden" aria-label="Data Settings"></section>
+      </main>
+    </div>
+
+    <footer class="app-footer">
+      <div class="app-footer__inner">
+        <p class="app-footer__credit">Designed &amp; Developed by Prateek Dutta</p>
+        <p class="app-footer__copy">2026 All copyright Reserved.</p>
+      </div>
+    </footer>
+  </div>
+
+  <div id="modal-root" class="modal-root hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-scroll">
+      <div id="modal-content" class="modal-panel"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/seed.js"></script>
+  <script src="js/users.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/projects.js"></script>
+  <script src="js/updates.js"></script>
+  <script src="js/roster.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
