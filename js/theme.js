@@ -11,9 +11,6 @@
       const saved = localStorage.getItem(KEY());
       if (saved === 'light' || saved === 'dark') return saved;
     } catch (_) { /* ignore */ }
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
     return 'light';
   }
 
